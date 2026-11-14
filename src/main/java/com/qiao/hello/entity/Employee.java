@@ -1,6 +1,8 @@
 package com.qiao.hello.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,24 +13,28 @@ public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Getter
+    @Setter
+    private Long id;
 
+    @Setter
+    @Getter
     private String name;
+
+    @Getter
+    @Setter
     private String department;
+
+    @Getter
+    @Setter
     private BigDecimal salary;
+
+    @Getter
+    @Setter
     private LocalDate hireDate;
 
     //no-arg constructor required by JPA
     public Employee(){}
-
-    //getters and setters for all fields
-    public long getId() { return id; }
-    public String getName() { return name; }
-    public String getDepartment() { return department; }
-    public BigDecimal getSalary() { return salary; }
-    public LocalDate getHireDate() { return hireDate; }
-
-    //setters...
 
 
 }

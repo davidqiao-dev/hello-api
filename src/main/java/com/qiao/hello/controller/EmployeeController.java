@@ -5,6 +5,7 @@ import com.qiao.hello.repository.EmployeeRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.OptionalLong;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -27,5 +28,27 @@ public class EmployeeController {
     @GetMapping("/{id}")
     public Employee getOne(@PathVariable Long id) {
         return  employeeRepository.findById(id).orElseThrow();
+    }
+
+    @PostMapping
+    public Employee create(@RequestBody Employee employee) {
+        employee.setId(null);
+        return employeeRepository.save(employee);
+    }
+
+    @PutMapping("/{id}")
+    public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
+        Employee existingEmployee = employeeRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("employee " + id + " not found"));
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setDepartment(employee.getDepartment());
+        existingEmployee.setSalary(employee.getSalary());
+        existingEmployee.setHireDate(employee.getHireDate());
+        return employeeRepository.save(existingEmployee);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        employeeRepository.deleteById(id);
     }
 }
