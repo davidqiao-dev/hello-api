@@ -1,5 +1,6 @@
 package com.qiao.hello;
 
+import com.qiao.hello.dto.EmployeeDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,13 +14,4 @@ public class HelloController {
         return "Hello World";
     }
 
-    @GetMapping("/api/employees/{id}")
-    public Employee getEmployee(@PathVariable long id) {
-        return new Employee(id, "Zhang Wei", "IT");
-    }
-
-    @GetMapping("/api/employees")
-    public String listEmployees(@RequestParam(required = false) String department) {
-        return "Department filter: " + department;
-    }
 }
