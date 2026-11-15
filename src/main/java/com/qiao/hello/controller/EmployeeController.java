@@ -2,8 +2,10 @@ package com.qiao.hello.controller;
 
 import com.qiao.hello.entity.Employee;
 import com.qiao.hello.repository.EmployeeRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.OptionalLong;
 
@@ -31,13 +33,13 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public Employee create(@RequestBody Employee employee) {
+    public Employee create(@Valid @RequestBody Employee employee) {
         employee.setId(null);
         return employeeRepository.save(employee);
     }
 
     @PutMapping("/{id}")
-    public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
+    public Employee update(@PathVariable Long id, @Valid @RequestBody Employee employee) {
         Employee existingEmployee = employeeRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("employee " + id + " not found"));
         existingEmployee.setName(employee.getName());
@@ -51,4 +53,30 @@ public class EmployeeController {
     public void delete(@PathVariable Long id) {
         employeeRepository.deleteById(id);
     }
+
+    @GetMapping("/search")
+    public List<Employee> search(@RequestParam String name) {
+        return employeeRepository.findByNameContaining(name);
+    }
+
+    @GetMapping("/findbydeptandsalarygreaterthan")
+    public List<Employee> findByDepartmentAndSalaryGreaterThan(
+            @RequestParam String department,
+            @RequestParam BigDecimal salary) {
+        return employeeRepository.findByDepartmentAndSalaryGreaterThan(department, salary);
+    }
+
+    @GetMapping("/findbysalarybetween")
+    public List<Employee> findBySalaryBetween(@RequestParam BigDecimal min,
+                                              @RequestParam BigDecimal max) {
+        return employeeRepository.findBySalaryBetween(min, max);
+    }
+
+    @GetMapping("/employeesindeptorderedbysalary")
+    public List<Employee> employeesInDepartmentOrderedBySalary(
+            @RequestParam String dept) {
+
+        return employeeRepository.employeesInDepartmentOrderedBySalary(dept);
+    }
+
 }
