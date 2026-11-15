@@ -2,81 +2,51 @@ package com.qiao.hello.controller;
 
 import com.qiao.hello.entity.Employee;
 import com.qiao.hello.repository.EmployeeRepository;
+import com.qiao.hello.service.EmployeeService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.OptionalLong;
 
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-    private final EmployeeRepository  employeeRepository;
+    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     @GetMapping
     public List<Employee> list(@RequestParam(required = false) String department) {
         if(department != null){
-            return employeeRepository.findByDepartment(department);
+            return employeeService.findByDepartment(department);
         }
-        return employeeRepository.findAll();
+        return employeeService.findAll();
     }
 
     @GetMapping("/{id}")
     public Employee getOne(@PathVariable Long id) {
-        return  employeeRepository.findById(id).orElseThrow();
+        return  employeeService.findById(id);
     }
 
     @PostMapping
     public Employee create(@Valid @RequestBody Employee employee) {
-        employee.setId(null);
-        return employeeRepository.save(employee);
+        return employeeService.create(employee);
     }
 
     @PutMapping("/{id}")
     public Employee update(@PathVariable Long id, @Valid @RequestBody Employee employee) {
-        Employee existingEmployee = employeeRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("employee " + id + " not found"));
-        existingEmployee.setName(employee.getName());
-        existingEmployee.setDepartment(employee.getDepartment());
-        existingEmployee.setSalary(employee.getSalary());
-        existingEmployee.setHireDate(employee.getHireDate());
-        return employeeRepository.save(existingEmployee);
+        return employeeService.update(id, employee);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        employeeRepository.deleteById(id);
-    }
-
-    @GetMapping("/search")
-    public List<Employee> search(@RequestParam String name) {
-        return employeeRepository.findByNameContaining(name);
-    }
-
-    @GetMapping("/findbydeptandsalarygreaterthan")
-    public List<Employee> findByDepartmentAndSalaryGreaterThan(
-            @RequestParam String department,
-            @RequestParam BigDecimal salary) {
-        return employeeRepository.findByDepartmentAndSalaryGreaterThan(department, salary);
-    }
-
-    @GetMapping("/findbysalarybetween")
-    public List<Employee> findBySalaryBetween(@RequestParam BigDecimal min,
-                                              @RequestParam BigDecimal max) {
-        return employeeRepository.findBySalaryBetween(min, max);
-    }
-
-    @GetMapping("/employeesindeptorderedbysalary")
-    public List<Employee> employeesInDepartmentOrderedBySalary(
-            @RequestParam String dept) {
-
-        return employeeRepository.employeesInDepartmentOrderedBySalary(dept);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        employeeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
