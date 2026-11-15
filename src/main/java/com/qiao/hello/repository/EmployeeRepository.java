@@ -15,6 +15,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     List<Employee> findBySalaryBetween(BigDecimal min, BigDecimal max);
     List<Employee> findByNameContaining(String keyword);
 
-    @Query("select e from employee e where e.department = :dept order by e.salary desc")
+    @Query("select e from Employee e where e.department = :dept order by e.salary desc")
     List<Employee> employeesInDepartmentOrderedBySalary(@Param("dept") String dept);
 }
