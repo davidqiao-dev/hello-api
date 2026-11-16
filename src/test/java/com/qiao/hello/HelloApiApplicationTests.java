@@ -15,7 +15,7 @@ class HelloApiApplicationTests {
     void contextLoads() {
     }
 
-    /*in a scratch main or a test class, make a List<String> of 5 department names,
+    /*in a scratch main or a test class, make a List<String> of 5 departmentName names,
      then use a Set to remove duplicates, then iterate*/
     @Test
     void test() {

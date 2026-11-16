@@ -1,12 +1,10 @@
 package com.qiao.hello.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,10 +24,11 @@ public class Employee {
     @NotBlank(message = "name must not be blank")
     private String name;
 
+
     @Getter
     @Setter
-    @NotBlank(message = "department must not be blank")
-    private String department;
+    @Email(message = "invalid email format")
+    private String email;
 
     @Getter
     @Setter
@@ -46,5 +45,12 @@ public class Employee {
     //no-arg constructor required by JPA
     public Employee(){}
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
+    public void setDepartment(Department department){
+        this.department = department;
+    }
+    public Department getDepartment(){return department;}
 }

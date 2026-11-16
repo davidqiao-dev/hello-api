@@ -1,7 +1,9 @@
 package com.qiao.hello;
 
+import com.qiao.hello.entity.Department;
 import com.qiao.hello.entity.Employee;
 import com.qiao.hello.repository.EmployeeRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -19,19 +21,40 @@ public class EmployeeRepositoryTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    EntityManager entityManager;
+
     @Test
     void shouldSaveAndFindByDepartment() {
         Employee employee = new Employee();
         employee.setName("Test User");
-        employee.setDepartment("Testing");
         employee.setSalary(new BigDecimal("9000.00"));
         employee.setHireDate(LocalDate.of(2024, 1, 1));
         employeeRepository.save(employee);
 
-        var foundEmployee = employeeRepository.findByDepartment("Testing");
+        var foundEmployee = employeeRepository.findByDepartment_Name("Testing");
 
         assertThat(foundEmployee).hasSize(1);
         assertThat(foundEmployee.get(0).getName()).isEqualTo("Test User");
 
+    }
+
+    @Test
+    void shouldFindEmployeeByDepartmentName() {
+        Department department = new Department();
+        department.setName("Testing");
+        department.setLocation("Nowhere");
+        entityManager.persist(department);
+
+        Employee employee = new Employee();
+        employee.setName("Test User");
+        employee.setSalary(new BigDecimal("9000.00"));
+        employee.setHireDate(LocalDate.of(2024, 1, 1));
+        employee.setDepartment(department);
+        entityManager.persist(employee);
+
+        entityManager.flush();
+        var foundEmployee = employeeRepository.findByDepartment_Name(department.getName());
+        assertThat(foundEmployee).hasSize(1);
     }
 }
