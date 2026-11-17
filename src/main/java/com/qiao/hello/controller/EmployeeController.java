@@ -25,11 +25,16 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<EmployeeResponseDto> list(@RequestParam(required = false) String department) {
-        if (department != null) {
-            return employeeService.findByDepartment(department);
-        }
-        return employeeService.findAll();
+    public Page<EmployeeResponseDto> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort.Direction dir = "desc".equalsIgnoreCase(direction) ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));
+        return employeeService.findAll(pageable);
     }
 
     @GetMapping("/by-department")
@@ -42,7 +47,7 @@ public class EmployeeController {
     ) {
         Sort.Direction dir = "desc".equalsIgnoreCase(direction) ?
                 Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size,Sort.by(dir,sort));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sort));
         return employeeService.findByDepartment(department, pageable);
     }
 
