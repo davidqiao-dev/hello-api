@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,5 +57,17 @@ public class EmployeeRepositoryTest {
         entityManager.flush();
         var foundEmployee = employeeRepository.findByDepartment_Name(department.getName());
         assertThat(foundEmployee).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnFirstPageOfSizeOne() {
+        Department department = new Department();
+        department.setName("Testing");
+
+        shouldFindEmployeeByDepartmentName();
+        var firstPage = employeeRepository.findByDepartment_Name(department.getName(),
+                PageRequest.of(0, 1));
+        assertThat(firstPage.getContent()).hasSize(1);
+        assertThat(firstPage.getSize()).isEqualTo(1);
     }
 }

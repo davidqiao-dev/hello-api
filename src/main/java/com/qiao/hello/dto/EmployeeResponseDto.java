@@ -4,12 +4,14 @@ import com.qiao.hello.entity.Department;
 import com.qiao.hello.entity.Employee;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public record EmployeeResponseDto(
         Long id,
         String name,
         String email,
         BigDecimal salary,
+        LocalDate hireDate,
         Long departmentId,
         String departmentName
 ) {
@@ -20,6 +22,7 @@ public record EmployeeResponseDto(
                 employee.getName(),
                 employee.getEmail(),
                 employee.getSalary(),
+                employee.getHireDate(),
                 department == null ? null : department.getId(),
                 department == null ? null : department.getName()
         );

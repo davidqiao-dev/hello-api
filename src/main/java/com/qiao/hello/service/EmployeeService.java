@@ -8,6 +8,8 @@ import com.qiao.hello.exception.DepartmentNotFoundException;
 import com.qiao.hello.exception.EmployeeNotFoundException;
 import com.qiao.hello.repository.DepartmentRepository;
 import com.qiao.hello.repository.EmployeeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +33,20 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
+    public Page<EmployeeResponseDto> findAll(Pageable pageable) {
+        return employeeRepository.findAll(pageable).map(EmployeeResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
     public List<EmployeeResponseDto> findByDepartment(String dept) {
         return employeeRepository.findByDepartment_Name(dept)
                 .stream().map(EmployeeResponseDto::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<EmployeeResponseDto> findByDepartment(String dept, Pageable pageable) {
+        return employeeRepository.findByDepartment_Name(dept, pageable)
+                .map(EmployeeResponseDto::from);
     }
 
     @Transactional(readOnly = true)
@@ -53,11 +66,7 @@ public class EmployeeService {
         Department department = departmentRepository
                 .findById(employeeReqDto.departmentId())
                 .orElseThrow(() -> new DepartmentNotFoundException(employeeReqDto.departmentId()));
-        Employee employee = new Employee();
-        employee.setName(employeeReqDto.name());
-        employee.setEmail(employeeReqDto.email());
-        employee.setSalary(employeeReqDto.salary());
-        employee.setHireDate(employeeReqDto.hireDate());
+        Employee employee = EmployeeRequestDto.toEntity(employeeReqDto);
         employee.setDepartment(department);
         return EmployeeResponseDto.from(employeeRepository.save(employee));
     }
@@ -65,10 +74,7 @@ public class EmployeeService {
     public EmployeeResponseDto update(Long id, EmployeeRequestDto employeeRequestDto) {
         Employee existingEmployee = getEmployeeById(id);
 
-        existingEmployee.setName(employeeRequestDto.name());
-        existingEmployee.setEmail(employeeRequestDto.email());
-        existingEmployee.setSalary(employeeRequestDto.salary());
-        existingEmployee.setHireDate(employeeRequestDto.hireDate());
+        EmployeeRequestDto.setEntity(employeeRequestDto, existingEmployee);
         Department department = departmentRepository
                 .findById(employeeRequestDto.departmentId())
                 .orElseThrow(() -> new DepartmentNotFoundException(employeeRequestDto.departmentId()));
